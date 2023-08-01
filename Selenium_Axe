@@ -1,0 +1,34 @@
+from selenium import webdriver
+from axe_selenium_python import Axe
+
+class AccessibilityTest:
+
+    def __init__(self,siteUrl='',browser=''):
+        self.siteUrl = siteUrl
+
+        if browser == 'firefox':
+            self.driver = webdriver.Firefox()
+        else:
+            self.driver = webdriver.Chrome()
+
+        self.driver.get(self.siteUrl)
+        self.axe = Axe(self.driver)
+        self.axe.inject()
+
+    def analyzeWholePage(self):
+        results = self.axe.run()
+        self.axe.write_results(results, 'json-output1.json')
+        self.driver.close()
+
+        return results['violations']
+
+    def analyzeBySelector(self,selector):
+        results = self.axe.run(selector)
+        self.axe.write_results(results, 'a11y.json')
+        self.driver.close()
+        return results['violations']
+
+
+
+accessibility = AccessibilityTest("https://iflysouthern.com/", "chrome")
+print(accessibility.analyzeWholePage())
